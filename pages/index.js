@@ -6,7 +6,7 @@ import { AlurakutMenu, OrkutNostalgicIconSet } from '../src/lib/AlurakutCommons'
 function ProfileSidebar(props) {
   return (
     <Box>
-      <img src={`https:/github.com/${props.githubUser}.png`} />
+      <img src={`https://github.com/${props.githubUser}.png`} />
     </Box>
   );
 }
