@@ -1,8 +1,12 @@
+import { useEffect, useState } from 'react';
+import nookies from 'nookies';
+import jwt from 'jsonwebtoken';
+
 import MainGrid from '../src/components/MainGrid';
 import Box from '../src/components/Box';
+
 import { ProfileRelationsBoxWrapper } from '../src/components/ProfileRelations';
 import { AlurakutMenu, AlurakutProfileSidebarMenuDefault, OrkutNostalgicIconSet } from '../src/lib/AlurakutCommons';
-import { useEffect, useState } from 'react';
 
 function ProfileSidebar(props) {
   return (
@@ -18,8 +22,8 @@ function ProfileSidebar(props) {
   );
 }
 
-export default function Home() {
-  const githubUser = 'gabrielzevedo';
+export default function Home(props) {
+  const githubUser = props.githubUser;
   const [comunidades, setComunidades] = useState([]);
   const pessoasFavoritas = [
     'gabrielzevedo',
@@ -200,4 +204,32 @@ export default function Home() {
       </MainGrid>
     </>
   )
+}
+
+export async function getServerSideProps(context) {
+  const cookies = nookies.get(context);
+  const token = cookies.user_token;
+
+  const { isAuthenticated } = await fetch('https://alurakut-seven-kappa.vercel.app/api/auth', {
+    headers: {
+      'Authorization': token,
+    },
+  })
+  .then((response) => { return response.json() })
+
+  if (!isAuthenticated) {
+    return {
+      redirect: {
+        destination: '/login',
+        permanent: false,
+      }
+    }
+  }
+
+  const { githubUser } = jwt.decode(token);
+  return {
+    props: {
+      githubUser
+    }
+  }
 }
